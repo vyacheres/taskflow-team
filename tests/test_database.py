@@ -8,6 +8,7 @@ from database import Database
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = PROJECT_ROOT / "sql" / "schema.sql"
+SEED_PATH = PROJECT_ROOT / "sql" / "seed.sql"
 
 
 class TestDatabase(unittest.TestCase):
@@ -50,3 +51,16 @@ class TestDatabase(unittest.TestCase):
         self.db.add_task("t2", "d", "2026-01-02", "medium", "new", id_a)
         self.assertEqual(self.db.count_tasks_by_employee(id_a), 2)
         self.assertEqual(self.db.count_tasks_by_employee(id_b), 0)
+
+    def test_seed_load_is_repeatable(self) -> None:
+        seed_db_path = Path(self._tmpdir.name) / "seed.db"
+        db = Database(seed_db_path, SCHEMA_PATH, SEED_PATH)
+        db.initialize()
+        db.load_seed()
+        self.assertEqual(len(db.list_employees()), 8)
+        self.assertEqual(len(db.list_tasks()), 16)
+        # Повторная загрузка не должна падать по FK.
+        db.load_seed()
+        self.assertEqual(len(db.list_employees()), 8)
+        self.assertEqual(len(db.list_tasks()), 16)
+        db.close()

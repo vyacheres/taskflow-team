@@ -1,3 +1,11 @@
+-- =============================================================================
+-- Схема БД TaskFlow Team (SQLite).
+-- Выполняется при старте приложения (executescript из database.initialize).
+-- Стиль комментариев: короткие строки (~79 символов), пояснение назначения.
+-- =============================================================================
+
+-- Сотрудники: идентификатор, ФИО, должность, уникальный email, опциональная
+-- команда. Связь 1:N с tasks (у одного сотрудника много задач).
 CREATE TABLE IF NOT EXISTS employees (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     full_name TEXT NOT NULL,
@@ -6,6 +14,8 @@ CREATE TABLE IF NOT EXISTS employees (
     team TEXT
 );
 
+-- Задачи: срок deadline хранится как TEXT в формате YYYY-MM-DD (проверка в UI).
+-- priority и status ограничены CHECK; employee_id — FK с каскадным удалением.
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,

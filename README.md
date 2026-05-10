@@ -20,11 +20,13 @@
 
 ## 3. Технологии / Technologies
 
-| | RU | EN |
-|---|----|----|
-| **Язык** | Python 3.10+ | Python 3.10+ |
-| **СУБД** | SQLite (файл `taskflow_team.db`, скрипты `sql/schema.sql`, `sql/seed.sql`) | SQLite (file `taskflow_team.db`, scripts `sql/schema.sql`, `sql/seed.sql`) |
-| **Стандартная библиотека** | `sqlite3`, `pathlib`, `unittest`, консольный ввод-вывод | `sqlite3`, `pathlib`, `unittest`, console I/O |
+
+|                            | RU                                                                         | EN                                                                         |
+| -------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Язык**                   | Python 3.10+                                                               | Python 3.10+                                                               |
+| **СУБД**                   | SQLite (файл `taskflow_team.db`, скрипты `sql/schema.sql`, `sql/seed.sql`) | SQLite (file `taskflow_team.db`, scripts `sql/schema.sql`, `sql/seed.sql`) |
+| **Стандартная библиотека** | `sqlite3`, `pathlib`, `unittest`, консольный ввод-вывод                    | `sqlite3`, `pathlib`, `unittest`, console I/O                              |
+
 
 Метаданные версии Python: `pyproject.toml` → `requires-python`.
 
@@ -32,35 +34,37 @@
 
 ## 4. Установка и запуск / Installation and launch
 
-### RU (для проверяющего)
+### RU: 
 
 1. Установите **Python 3.10 или новее** и убедитесь, что команда `python` доступна в терминале.
 2. Клонируйте или распакуйте проект и перейдите в каталог `taskflow_team` (корень, где лежит `main.py`).
 3. Запуск приложения:
-   ```bash
+  ```bash
    python main.py
-   ```
+  ```
 4. При первом запуске таблицы создаются из `sql/schema.sql`. Файл БД появится рядом с кодом (`taskflow_team.db`).
 5. (Опционально) Демо-данные: в главном меню пункт **5. Load demo data (seed)** или выполните команду из раздела «Примеры» ниже.
 6. (Опционально) Тесты:
-   ```bash
+  ```bash
    python -m unittest discover -s tests -v
-   ```
+  ```
+   Ожидаемый итог на текущей версии: **12 tests, OK**.
 
-### EN (for the reviewer)
+### EN:
 
 1. Install **Python 3.10+** and ensure `python` works in your terminal.
 2. Open the project root folder `taskflow_team` (where `main.py` lives).
 3. Run:
-   ```bash
+  ```bash
    python main.py
-   ```
+  ```
 4. On first launch, tables are created from `sql/schema.sql`. The DB file `taskflow_team.db` appears next to the code.
 5. (Optional) Demo data: main menu → **5. Load demo data (seed)**, or use the shell one-liner in **Usage examples**.
 6. (Optional) Tests:
-   ```bash
+  ```bash
    python -m unittest discover -s tests -v
-   ```
+  ```
+   Expected result for the current version: **12 tests, OK**.
 
 **RU:** Экран очищается перед каждым меню; после больших таблиц нажмите **Enter**, чтобы вернуться к меню. Если нет `sql/schema.sql` или нет доступа к файлу БД — программа выведет сообщение об ошибке и завершится.
 
@@ -123,7 +127,7 @@ taskflow_team/
 │   └── seed.sql         # RU: демо-данные. EN: demo seed data.
 ├── docs/
 │   └── er_diagram.txt   # RU: ER-модель (текст). EN: ER model (text).
-├── tests/               # RU: unittest. EN: unit tests.
+├── tests/               # RU/EN: unit tests (database, utils, main flow).
 ├── pyproject.toml       # RU: requires-python и метаданные. EN: Python version metadata.
 └── README.md            # RU/EN: этот файл. EN: this file.
 ```
@@ -132,16 +136,16 @@ taskflow_team/
 
 ## 7. Схема базы данных / Database schema
 
-**RU:** Текстовая ER-диаграмма в нотации Мартина и пояснения связей — в **`docs/er_diagram.txt`**. Кратко:
+**RU:** Текстовая ER-диаграмма в нотации Мартина и пояснения связей — в `**docs/er_diagram.txt`**. Кратко:
 
-- Таблица **`employees`**: `id`, ФИО, должность, уникальный `email`, опциональная `team`.
-- Таблица **`tasks`**: `id`, `title`, `description`, `deadline` (TEXT `YYYY-MM-DD`), `priority`, `status`, `employee_id` → FK на `employees(id)` **ON DELETE CASCADE**, `created_at`.
+- Таблица `**employees**`: `id`, ФИО, должность, уникальный `email`, опциональная `team`.
+- Таблица `**tasks**`: `id`, `title`, `description`, `deadline` (TEXT `YYYY-MM-DD`), `priority`, `status`, `employee_id` → FK на `employees(id)` **ON DELETE CASCADE**, `created_at`.
 - Связь **1 : N** (один сотрудник — много задач; у задачи один исполнитель).
 
-**EN:** Textual ER diagram (Martin notation) — **`docs/er_diagram.txt`**. Summary:
+**EN:** Textual ER diagram (Martin notation) — `**docs/er_diagram.txt`**. Summary:
 
-- **`employees`**: `id`, name, role, unique `email`, optional `team`.
-- **`tasks`**: `id`, `title`, `description`, `deadline` (TEXT `YYYY-MM-DD`), `priority`, `status`, `employee_id` → FK to `employees(id)` **ON DELETE CASCADE**, `created_at`.
+- `**employees**`: `id`, name, role, unique `email`, optional `team`.
+- `**tasks**`: `id`, `title`, `description`, `deadline` (TEXT `YYYY-MM-DD`), `priority`, `status`, `employee_id` → FK to `employees(id)` **ON DELETE CASCADE**, `created_at`.
 - Relationship **1 : N** (one employee, many tasks; each task has one assignee).
 
 ---
@@ -166,13 +170,78 @@ taskflow_team/
 
 ---
 
-## 9. Автор / Author
+## 9. Тестирование / Testing
 
-| | |
-|---|--|
-| **ФИО / Name** | Vyacheslav Panyuhin (Вячеслав Панюхин) |
-| **Курс / Course** | 2 |
-| **Группа / Group** | 11ФС |
+### RU
+
+Проект покрыт автоматическими тестами `unittest` (всего **12**):
+
+- `tests/test_utils.py`:
+  - валидация email (валидные и невалидные случаи);
+- `tests/test_database.py`:
+  - базовый CRUD-сценарий сотрудник/задача;
+  - пустая сводка `team_summary()` без задач;
+  - фильтр по несуществующему сотруднику;
+  - подсчёт задач по сотруднику;
+  - повторная загрузка `seed.sql` без ошибки FK;
+- `tests/test_main.py` (интеграционные тесты потока `main()` через mock):
+  - обработка `FileNotFoundError` при старте;
+  - обработка `sqlite3.Error` при инициализации;
+  - корректный выход по `KeyboardInterrupt`;
+  - ветка меню `5` при подтверждении (загрузка seed);
+  - ветка меню `5` при отказе (seed не грузится, вывод `Cancelled.`).
+
+Запуск:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+### EN
+
+The project includes automated `unittest` coverage (**12 tests total**):
+
+- `tests/test_utils.py`:
+  - email validation (valid and invalid cases);
+- `tests/test_database.py`:
+  - basic employee/task CRUD roundtrip;
+  - empty `team_summary()` behavior;
+  - filtering by unknown employee;
+  - task counting per employee;
+  - repeatable `seed.sql` load without FK failure;
+- `tests/test_main.py` (main flow integration tests via mocks):
+  - startup `FileNotFoundError` handling;
+  - startup `sqlite3.Error` handling;
+  - graceful `KeyboardInterrupt` exit;
+  - main menu option `5` when confirmed (seed is loaded);
+  - main menu option `5` when declined (seed is skipped, `Cancelled.`).
+
+Run:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Sample output:
+
+```text
+...
+Ran 12 tests in 0.15s
+
+OK
+```
+
+---
+
+## 10. Автор / Author
+
+
+|                    |                                        |
+| ------------------ | -------------------------------------- |
+| **ФИО / Name**     | Vyacheslav Panyuhin (Вячеслав Панюхин) |
+| **Курс / Course**  | 2                                      |
+| **Группа / Group** | 11ФС                                   |
+
 
 ---
 

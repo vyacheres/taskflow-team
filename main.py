@@ -435,53 +435,57 @@ def main() -> None:
             return
 
         flash = "TaskFlow Team started. Database is ready."
-        while True:
-            clear_screen()
-            if flash:
-                print(flash + "\n")
-                flash = ""
-            print(
-                "=== Main Menu ===\n"
-                "1. Employees\n"
-                "2. Tasks\n"
-                "3. Filters\n"
-                "4. Reports\n"
-                "5. Load demo data (seed)\n"
-                "0. Exit",
-            )
-            choice = input("Select an action: ").strip()
-
-            if choice == "1":
-                employee_menu(db)
-            elif choice == "2":
-                task_menu(db)
-            elif choice == "3":
-                filter_menu(db)
-            elif choice == "4":
-                reports_menu(db)
-            elif choice == "5":
+        try:
+            while True:
                 clear_screen()
-                seed_warn = (
-                    "This will erase all employees and tasks, then load data "
-                    "from sql/seed.sql."
+                if flash:
+                    print(flash + "\n")
+                    flash = ""
+                print(
+                    "=== Main Menu ===\n"
+                    "1. Employees\n"
+                    "2. Tasks\n"
+                    "3. Filters\n"
+                    "4. Reports\n"
+                    "5. Load demo data (seed)\n"
+                    "0. Exit",
                 )
-                print(seed_warn)
-                if read_yes_no("Continue? (y/n): "):
-                    try:
-                        db.load_seed()
-                        flash = "Demo data loaded."
-                    except OSError as exc:
-                        flash = f"Error reading seed file: {exc}"
-                    except sqlite3.Error as exc:
-                        flash = f"Database error: {exc}"
+                choice = input("Select an action: ").strip()
+
+                if choice == "1":
+                    employee_menu(db)
+                elif choice == "2":
+                    task_menu(db)
+                elif choice == "3":
+                    filter_menu(db)
+                elif choice == "4":
+                    reports_menu(db)
+                elif choice == "5":
+                    clear_screen()
+                    seed_warn = (
+                        "This will erase all employees and tasks, then load data "
+                        "from sql/seed.sql."
+                    )
+                    print(seed_warn)
+                    if read_yes_no("Continue? (y/n): "):
+                        try:
+                            db.load_seed()
+                            flash = "Demo data loaded."
+                        except OSError as exc:
+                            flash = f"Error reading seed file: {exc}"
+                        except sqlite3.Error as exc:
+                            flash = f"Database error: {exc}"
+                    else:
+                        flash = "Cancelled."
+                elif choice == "0":
+                    clear_screen()
+                    print("Exiting program.")
+                    break
                 else:
-                    flash = "Cancelled."
-            elif choice == "0":
-                clear_screen()
-                print("Exiting program.")
-                break
-            else:
-                flash = "Unknown command."
+                    flash = "Unknown command."
+        except KeyboardInterrupt:
+            clear_screen()
+            print("Interrupted by user. Exiting program.")
     finally:
         db.close()
 

@@ -1,7 +1,19 @@
+-- =============================================================================
+-- Демонстрационные данные TaskFlow Team (SQLite).
+-- Сначала очистка таблиц и сброс AUTOINCREMENT, затем INSERT с фиксированными
+-- связями employee_id (1..8). Повторный запуск безопасен после правок схемы.
+-- =============================================================================
+
+-- Порядок важен при включённых FK: сначала задачи, затем сотрудники.
 DELETE FROM tasks;
 DELETE FROM employees;
+
+-- Сброс счётчика id, иначе повторная загрузка даст id 9+ при старых ссылках в
+-- INSERT задач и нарушится внешний ключ.
 DELETE FROM sqlite_sequence WHERE name IN ('employees', 'tasks');
 
+-- Восемь сотрудников: тимлид, бэкенд, фронтенд, QA, DevOps, продакт.
+-- id присваиваются по порядку вставки: 1..8.
 INSERT INTO employees (full_name, position, email, team) VALUES
 ('Ivan Petrov', 'Team Lead', 'ivan.petrov@novasoft.local', 'Core Platform'),
 ('Alina Sokolova', 'Backend Developer', 'alina.sokolova@novasoft.local', 'Core Platform'),
@@ -12,6 +24,7 @@ INSERT INTO employees (full_name, position, email, team) VALUES
 ('Sergey Kozlov', 'DevOps Engineer', 'sergey.kozlov@novasoft.local', 'Infrastructure'),
 ('Anna Belova', 'Product Manager', 'anna.belova@novasoft.local', 'Product');
 
+-- Шестнадцать задач спринта; employee_id ссылается на строки employees выше.
 INSERT INTO tasks (title, description, deadline, priority, status, employee_id) VALUES
 ('Release 1.8 sprint planning', 'Prepare sprint backlog, validate estimates with tech lead, and align release goals with product priorities.', '2026-04-24', 'high', 'done', 8),
 ('Implement role-based permissions', 'Add RBAC checks for admin and manager roles in API endpoints and service layer.', '2026-04-30', 'high', 'in_progress', 2),
