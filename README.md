@@ -1,228 +1,238 @@
-# TaskFlow Team / Команда TaskFlow
+<div align="center">
+
+# TaskFlow Team
+
+**Консольное приложение для учёта задач и сотрудников · SQLite · Python 3.10+**
+
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![SQLite](https://img.shields.io/badge/database-SQLite-003B57?style=flat&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![Tests](https://img.shields.io/badge/tests-12%20passed-success?style=flat)](https://github.com/vyacheres/taskflow-team)
+
+</div>
 
 ---
+
+## Оглавление · Table of contents
+
+| RU | EN |
+|----|-----|
+| [1. Название проекта](#s1) | [1. Project name](#s1) |
+| [2. Описание задачи](#s2) | [2. Task description](#s2) |
+| [3. Технологии](#s3) | [3. Technologies](#s3) |
+| [4. Установка и запуск](#s4) | [4. Installation and launch](#s4) |
+| [5. Примеры использования](#s5) | [5. Usage examples](#s5) |
+| [6. Структура проекта](#s6) | [6. Project structure](#s6) |
+| [7. Схема БД](#s7) | [7. Database schema](#s7) |
+| [8. Известные ограничения](#s8) | [8. Known issues](#s8) |
+| [9. Тестирование](#s9) | [9. Testing](#s9) |
+| [10. Автор](#s10) | [10. Author](#s10) |
+| [Демо-сценарий](#demo) | [Demo scenario](#demo) |
+
+---
+
+<a id="s1"></a>
 
 ## 1. Название проекта / Project name
 
-**RU:** **TaskFlow Team** — консольное приложение на Python для учёта внутренних задач IT-компании: сотрудники, задачи, фильтры и отчёты в одной локальной базе SQLite.
-
-**EN:** **TaskFlow Team** is a Python console app for internal task tracking in an IT company: employees, tasks, filters, and reports in a single local SQLite database.
+| RU | EN |
+|----|-----|
+| **TaskFlow Team** — приложение на Python для учёта внутренних задач IT-компании: сотрудники, задачи, фильтры и отчёты в одной локальной базе **SQLite**. | **TaskFlow Team** is a Python **console** app for internal task tracking: employees, tasks, filters, and reports in a single local **SQLite** database. |
 
 ---
+
+<a id="s2"></a>
 
 ## 2. Описание задачи / Task description
 
-**RU:** **Контекст:** компания **NovaSoft**. **Заказчик** — тимлид команды Core Platform; **проблема** — задачи разбросаны по чатам и таблицам, сложно контролировать сроки и загрузку команды; **решение** — единый CLI с одной БД для сотрудников, задач, статусов и отчётов.
-
-**EN:** **Context:** **NovaSoft** company. **Customer** — Core Platform team lead; **problem** — tasks scattered across chats and spreadsheets, making deadlines and team workload hard to control; **solution** — one CLI tool with a single database for employees, tasks, statuses, and reports.
+| RU | EN |
+|----|-----|
+| **Контекст:** компания **NovaSoft**. **Заказчик** — тимлид команды Core Platform. **Проблема:** задачи разбросаны по чатам и таблицам, сложно контролировать сроки и загрузку. **Решение:** единый CLI и одна БД для сотрудников, задач, статусов и отчётов. | **Context:** **NovaSoft**. **Customer:** Core Platform team lead. **Problem:** tasks scattered across chats and spreadsheets; deadlines and workload are hard to control. **Solution:** one CLI and one database for employees, tasks, statuses, and reports. |
 
 ---
+
+<a id="s3"></a>
 
 ## 3. Технологии / Technologies
 
-
-|                            | RU                                                                         | EN                                                                         |
-| -------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| **Язык**                   | Python 3.10+                                                               | Python 3.10+                                                               |
-| **СУБД**                   | SQLite (файл `taskflow_team.db`, скрипты `sql/schema.sql`, `sql/seed.sql`) | SQLite (file `taskflow_team.db`, scripts `sql/schema.sql`, `sql/seed.sql`) |
-| **Стандартная библиотека** | `sqlite3`, `pathlib`, `unittest`, консольный ввод-вывод                    | `sqlite3`, `pathlib`, `unittest`, console I/O                              |
-
-
-Метаданные версии Python: `pyproject.toml` → `requires-python`.
+| Компонент · Component | Описание · Details |
+|-----------------------|--------------------|
+| **Язык · Language** | Python **3.10+** (`pyproject.toml` → `requires-python`) |
+| **СУБД · DBMS** | **SQLite** — файл `taskflow_team.db`, скрипты `sql/schema.sql`, `sql/seed.sql` |
+| **Библиотеки · Stdlib** | `sqlite3`, `pathlib`, `unittest`, консольный ввод-вывод · console I/O |
 
 ---
+
+<a id="s4"></a>
 
 ## 4. Установка и запуск / Installation and launch
 
-### RU: 
-
-1. Установите **Python 3.10 или новее** и убедитесь, что команда `python` доступна в терминале.
-2. Клонируйте или распакуйте проект и перейдите в каталог `taskflow_team` (корень, где лежит `main.py`).
-3. Запуск приложения:
-  ```bash
-   python main.py
-  ```
-4. При первом запуске таблицы создаются из `sql/schema.sql`. Файл БД появится рядом с кодом (`taskflow_team.db`).
-5. (Опционально) Демо-данные: в главном меню пункт **5. Load demo data (seed)** или выполните команду из раздела «Примеры» ниже.
-6. (Опционально) Тесты:
-  ```bash
-   python -m unittest discover -s tests -v
-  ```
-   Ожидаемый итог на текущей версии: **12 tests, OK**.
-
-### EN:
-
-1. Install **Python 3.10+** and ensure `python` works in your terminal.
-2. Open the project root folder `taskflow_team` (where `main.py` lives).
-3. Run:
-  ```bash
-   python main.py
-  ```
-4. On first launch, tables are created from `sql/schema.sql`. The DB file `taskflow_team.db` appears next to the code.
-5. (Optional) Demo data: main menu → **5. Load demo data (seed)**, or use the shell one-liner in **Usage examples**.
-6. (Optional) Tests:
-  ```bash
-   python -m unittest discover -s tests -v
-  ```
-   Expected result for the current version: **12 tests, OK**.
-
-**RU:** Экран очищается перед каждым меню; после больших таблиц нажмите **Enter**, чтобы вернуться к меню. Если нет `sql/schema.sql` или нет доступа к файлу БД — программа выведет сообщение об ошибке и завершится.
-
-**EN:** The screen is cleared before each menu; after large tables, press **Enter** to return. If `sql/schema.sql` is missing or the DB file cannot be opened, the app prints an error and exits.
-
----
-
-## 5. Примеры использования / Usage examples
-
-**RU:** Ниже — текстовый сценарий работы с приложением.
-
-**EN:** Below is a text-only usage scenario.
-
 ### RU
 
-```
-=== Main Menu ===
-…
-Выберите 5 → подтвердите загрузку сида → в меню Employees (1) появятся 8 сотрудников.
-Tasks (2) — список задач спринта.
-Filters (3) → 4 — просроченные задачи.
-Reports (4) → 1 — сводка по команде.
-```
+1. Установите **Python 3.10+**, в терминале доступна команда `python`.
+2. Откройте каталог проекта (корень, где лежит `main.py`).
+3. Запуск:
 
-Загрузка сида из shell (альтернатива меню):
+   ```bash
+   python main.py
+   ```
 
-```bash
-python -c "from pathlib import Path; import sqlite3; conn=sqlite3.connect('taskflow_team.db'); conn.executescript(Path('sql/seed.sql').read_text(encoding='utf-8')); conn.commit(); conn.close()"
-```
+4. При первом запуске создаются таблицы из `sql/schema.sql`; рядом появится `taskflow_team.db`.
+5. **Демо-данные:** в главном меню пункт **5. Load demo data (seed)** или команда из раздела [Примеры](#s5).
+6. **Тесты:**
+
+   ```bash
+   python -m unittest discover -s tests -v
+   ```
+
+   Ожидаемый результат: **12 tests, OK**.
+
+> Экран очищается перед каждым меню; после больших таблиц нажмите **Enter**. Если нет `sql/schema.sql` или нет доступа к файлу БД — программа сообщит об ошибке и завершится.
 
 ### EN
 
-```
+1. Install **Python 3.10+**; ensure `python` works in your terminal.
+2. Open the project root (folder containing `main.py`).
+3. Run:
+
+   ```bash
+   python main.py
+   ```
+
+4. On first launch, tables are created from `sql/schema.sql`; `taskflow_team.db` appears next to the code.
+5. **Demo data:** main menu → **5. Load demo data (seed)**, or the shell command in [Usage examples](#s5).
+6. **Tests:**
+
+   ```bash
+   python -m unittest discover -s tests -v
+   ```
+
+   Expected: **12 tests, OK**.
+
+> The screen is cleared before each menu; after large tables, press **Enter**. If `sql/schema.sql` is missing or the DB file cannot be opened, the app prints an error and exits.
+
+---
+
+<a id="s5"></a>
+
+## 5. Примеры использования / Usage examples
+
+| RU | EN |
+|----|-----|
+| Ниже — **текстовый сценарий** работы с приложением (без скриншотов). | Below is a **text-only** walkthrough (no screenshots). |
+
+### RU — сценарий
+
+```text
 === Main Menu ===
 …
-Choose 5 → confirm seed load → Employees (1) shows 8 demo employees.
-Tasks (2) — sprint task list.
-Filters (3) → option 4 — overdue tasks.
-Reports (4) → option 1 — team summary.
+5 → подтвердить seed → Employees (1): 8 сотрудников
+Tasks (2) — список задач спринта
+Filters (3) → 4 — просроченные задачи
+Reports (4) → 1 — сводка по команде
 ```
 
-Shell seed (alternative to the menu):
+**Загрузка сида из shell** (альтернатива меню):
+
+```bash
+python -c "from pathlib import Path; import sqlite3; conn=sqlite3.connect('taskflow_team.db'); conn.executescript(Path('sql/seed.sql').read_text(encoding='utf-8')); conn.commit(); conn.close()"
+```
+
+### EN — scenario
+
+```text
+=== Main Menu ===
+…
+5 → confirm seed → Employees (1): 8 employees
+Tasks (2) — sprint task list
+Filters (3) → option 4 — overdue tasks
+Reports (4) → option 1 — team summary
+```
+
+**Shell seed** (alternative to the menu):
 
 ```bash
 python -c "from pathlib import Path; import sqlite3; conn=sqlite3.connect('taskflow_team.db'); conn.executescript(Path('sql/seed.sql').read_text(encoding='utf-8')); conn.commit(); conn.close()"
 ```
 
 ---
+
+<a id="s6"></a>
 
 ## 6. Структура проекта / Project structure
 
 ```text
 taskflow_team/
-├── main.py              # RU: меню CLI, вызов Database, очистка экрана. EN: CLI menus, Database calls, screen clear.
-├── database.py          # RU: SQL-запросы, одно соединение на сессию. EN: SQL layer, one connection per session.
-├── utils.py             # RU: ввод, валидация, таблицы в консоли. EN: input helpers, validation, table printing.
-├── config.py            # RU: пути к БД и SQL. EN: paths to DB and SQL files.
+├── main.py              # CLI, меню, вызов Database, очистка экрана
+├── database.py          # SQL-слой, одно соединение на сессию
+├── utils.py             # Ввод, валидация, печать таблиц
+├── config.py            # Пути к БД и SQL-файлам
 ├── sql/
-│   ├── schema.sql       # RU: CREATE TABLE. EN: schema DDL.
-│   └── seed.sql         # RU: демо-данные. EN: demo seed data.
+│   ├── schema.sql       # DDL (CREATE TABLE)
+│   └── seed.sql         # Демо-данные
 ├── docs/
-│   └── er_diagram.txt   # RU: ER-модель (текст). EN: ER model (text).
-├── tests/               # RU/EN: unit tests (database, utils, main flow).
-├── pyproject.toml       # RU: requires-python и метаданные. EN: Python version metadata.
-└── README.md            # RU/EN: этот файл. EN: this file.
+│   └── er_diagram.txt   # ER-модель (текст, нотация Мартина)
+├── tests/               # unittest: database, utils, main
+├── pyproject.toml       # requires-python, метаданные проекта
+└── README.md            # Документация (этот файл)
 ```
 
 ---
+
+<a id="s7"></a>
 
 ## 7. Схема базы данных / Database schema
 
-**RU:** Текстовая ER-диаграмма в нотации Мартина и пояснения связей — в `**docs/er_diagram.txt`**. Кратко:
+| RU | EN |
+|----|-----|
+| Полная текстовая ER-диаграмма и пояснения связей — в файле [`docs/er_diagram.txt`](docs/er_diagram.txt). | Full textual ER diagram (Martin notation) — [`docs/er_diagram.txt`](docs/er_diagram.txt). |
 
-- Таблица `**employees**`: `id`, ФИО, должность, уникальный `email`, опциональная `team`.
-- Таблица `**tasks**`: `id`, `title`, `description`, `deadline` (TEXT `YYYY-MM-DD`), `priority`, `status`, `employee_id` → FK на `employees(id)` **ON DELETE CASCADE**, `created_at`.
-- Связь **1 : N** (один сотрудник — много задач; у задачи один исполнитель).
+### Кратко · Summary
 
-**EN:** Textual ER diagram (Martin notation) — `**docs/er_diagram.txt`**. Summary:
-
-- `**employees**`: `id`, name, role, unique `email`, optional `team`.
-- `**tasks**`: `id`, `title`, `description`, `deadline` (TEXT `YYYY-MM-DD`), `priority`, `status`, `employee_id` → FK to `employees(id)` **ON DELETE CASCADE**, `created_at`.
-- Relationship **1 : N** (one employee, many tasks; each task has one assignee).
+| Таблица · Table | Поля · Columns | Связи · Relations |
+|-----------------|----------------|-------------------|
+| **`employees`** | `id`, ФИО, должность, уникальный `email`, опциональная `team` | 1 : N → `tasks` |
+| **`tasks`** | `id`, `title`, `description`, `deadline` (TEXT `YYYY-MM-DD`), `priority`, `status`, `employee_id`, `created_at` | `employee_id` → `employees(id)` **ON DELETE CASCADE** |
 
 ---
+
+<a id="s8"></a>
 
 ## 8. Известные проблемы / Known issues
 
-**RU:**
-
-- Интерфейс только CLI, без GUI.
-- Проверка email ориентирована на «простой» ASCII-шаблон; адреса с нестандартными символами могут быть отклонены.
-- Лимиты длины полей заданы в коде (`utils.py`), в SQLite отдельных `CHECK(length…)` нет.
-- Поле `created_at` в таблице есть, в текущих списках задач в консоли не выводится.
-- Сравнение «сегодня» для просрочки завязано на SQLite `date('now')` (UTC-поведение SQLite).
-
-**EN:**
-
-- CLI only; no GUI.
-- Email validation uses a simple ASCII-oriented pattern; some valid real-world addresses may be rejected.
-- Field length limits are enforced in code (`utils.py`), not as SQLite `CHECK` constraints.
-- Column `created_at` exists but is not shown in current task listings.
-- “Overdue” logic relies on SQLite `date('now')` (SQLite’s date semantics).
+| RU | EN |
+|----|-----|
+| Только **CLI**, без GUI. | **CLI** only; no GUI. |
+| Email — упрощённый ASCII-шаблон; часть реальных адресов может не пройти. | Email validation is ASCII-oriented; some real addresses may be rejected. |
+| Лимиты длины полей в **`utils.py`**, не в `CHECK` в SQLite. | Length limits enforced in **`utils.py`**, not SQLite `CHECK`. |
+| `created_at` есть в БД, в списках задач в консоли не показывается. | `created_at` exists in DB but is not shown in current task listings. |
+| «Просрочено» через SQLite `date('now')` (семантика дат SQLite). | “Overdue” uses SQLite `date('now')` (SQLite date semantics). |
 
 ---
 
+<a id="s9"></a>
+
 ## 9. Тестирование / Testing
 
-### RU
+| Показатель · Metric | Значение · Value |
+|---------------------|------------------|
+| Фреймворк · Framework | `unittest` |
+| Количество · Count | **12** тестов |
 
-Проект покрыт автоматическими тестами `unittest` (всего **12**):
+### Покрытие · Coverage
 
-- `tests/test_utils.py`:
-  - валидация email (валидные и невалидные случаи);
-- `tests/test_database.py`:
-  - базовый CRUD-сценарий сотрудник/задача;
-  - пустая сводка `team_summary()` без задач;
-  - фильтр по несуществующему сотруднику;
-  - подсчёт задач по сотруднику;
-  - повторная загрузка `seed.sql` без ошибки FK;
-- `tests/test_main.py` (интеграционные тесты потока `main()` через mock):
-  - обработка `FileNotFoundError` при старте;
-  - обработка `sqlite3.Error` при инициализации;
-  - корректный выход по `KeyboardInterrupt`;
-  - ветка меню `5` при подтверждении (загрузка seed);
-  - ветка меню `5` при отказе (seed не грузится, вывод `Cancelled.`).
+| Файл · File | Что проверяется · What is tested |
+|-------------|----------------------------------|
+| `tests/test_utils.py` | Валидация email (валид / невалид) |
+| `tests/test_database.py` | CRUD сотрудник/задача; пустой `team_summary()`; фильтр по несуществующему сотруднику; подсчёт задач; **повторный** `load_seed()` без FK-ошибки |
+| `tests/test_main.py` | Старт: `FileNotFoundError`, `sqlite3.Error`; `KeyboardInterrupt`; меню **5** при подтверждении и отказе |
 
-Запуск:
+### Команда · Command
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-### EN
-
-The project includes automated `unittest` coverage (**12 tests total**):
-
-- `tests/test_utils.py`:
-  - email validation (valid and invalid cases);
-- `tests/test_database.py`:
-  - basic employee/task CRUD roundtrip;
-  - empty `team_summary()` behavior;
-  - filtering by unknown employee;
-  - task counting per employee;
-  - repeatable `seed.sql` load without FK failure;
-- `tests/test_main.py` (main flow integration tests via mocks):
-  - startup `FileNotFoundError` handling;
-  - startup `sqlite3.Error` handling;
-  - graceful `KeyboardInterrupt` exit;
-  - main menu option `5` when confirmed (seed is loaded);
-  - main menu option `5` when declined (seed is skipped, `Cancelled.`).
-
-Run:
-
-```bash
-python -m unittest discover -s tests -v
-```
-
-Sample output:
+### Пример вывода · Sample output
 
 ```text
 ...
@@ -233,20 +243,23 @@ OK
 
 ---
 
+<a id="s10"></a>
+
 ## 10. Автор / Author
 
-
-|                    |                                        |
-| ------------------ | -------------------------------------- |
-| **ФИО / Name**     | Vyacheslav Panyuhin (Вячеслав Панюхин) |
-| **Курс / Course**  | 2                                      |
-| **Группа / Group** | 11ФС                                   |
-
+| Поле · Field | Значение · Value |
+|--------------|------------------|
+| **ФИО · Name** | Vyacheslav Panyuhin (Вячеслав Панюхин) |
+| **Курс · Course** | 2 |
+| **Группа · Group** | 11ФС |
 
 ---
 
+<a id="demo"></a>
+
 ## Дополнительно: сценарий демо / Extra: demo scenario
 
-**RU:** 1) Employees — команда после сида. 2) Tasks — задачи спринта. 3) Filters — просроченные и приоритет. 4) Reports — сводки. 5) Смена статуса задачи и повтор отчёта.
+| RU | EN |
+|----|-----|
+| 1) **Employees** — команда после сида. 2) **Tasks** — задачи спринта. 3) **Filters** — просроченные и приоритет. 4) **Reports** — сводки. 5) Смена статуса задачи и повтор отчёта. | 1) **Employees** — team after seed. 2) **Tasks** — sprint items. 3) **Filters** — overdue / priority. 4) **Reports** — summaries. 5) Change task status and refresh reports. |
 
-**EN:** 1) Employees — team after seed. 2) Tasks — sprint items. 3) Filters — overdue / priority. 4) Reports — summaries. 5) Change a task status and refresh reports.
