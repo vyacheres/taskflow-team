@@ -58,7 +58,8 @@
 |-----------------------|--------------------|
 | **Язык · Language** | Python **3.10+** (`pyproject.toml` → `requires-python`) |
 | **СУБД · DBMS** | **SQLite** — файл `taskflow_team.db`, скрипты `sql/schema.sql`, `sql/seed.sql` |
-| **Библиотеки · Stdlib** | `sqlite3`, `pathlib`, `unittest`, консольный ввод-вывод · console I/O |
+| **Библиотеки · Stdlib** | `sqlite3`, `pathlib`, `unittest`, `textwrap`, консольный ввод-вывод · console I/O |
+| **Рендеринг CLI · CLI rendering** | Таблицы с переносом длинного текста + режим карточек задач + ANSI-подсветка статуса/приоритета |
 
 ---
 
@@ -87,6 +88,7 @@
    Ожидаемый результат: **12 tests, OK**.
 
 > Экран очищается перед каждым меню; после больших таблиц нажмите **Enter**. Если нет `sql/schema.sql` или нет доступа к файлу БД — программа сообщит об ошибке и завершится.
+> Для задач можно менять режим вывода в `config.py`: `TASKS_VIEW_MODE = "cards"` или `"table"`. Цвета включаются флагом `ENABLE_COLORS`.
 
 ### EN
 
@@ -109,6 +111,7 @@
    Expected: **12 tests, OK**.
 
 > The screen is cleared before each menu; after large tables, press **Enter**. If `sql/schema.sql` is missing or the DB file cannot be opened, the app prints an error and exits.
+> Task output mode is configurable in `config.py`: `TASKS_VIEW_MODE = "cards"` or `"table"`. Colors are controlled by `ENABLE_COLORS`.
 
 ---
 
@@ -126,7 +129,7 @@
 === Main Menu ===
 …
 5 → подтвердить seed → Employees (1): 8 сотрудников
-Tasks (2) — список задач спринта
+Tasks (2) — карточки задач (полный title без обрезки)
 Filters (3) → 4 — просроченные задачи
 Reports (4) → 1 — сводка по команде
 ```
@@ -143,7 +146,7 @@ python -c "from pathlib import Path; import sqlite3; conn=sqlite3.connect('taskf
 === Main Menu ===
 …
 5 → confirm seed → Employees (1): 8 employees
-Tasks (2) — sprint task list
+Tasks (2) — task cards (full title, no truncation)
 Filters (3) → option 4 — overdue tasks
 Reports (4) → option 1 — team summary
 ```
@@ -164,8 +167,8 @@ python -c "from pathlib import Path; import sqlite3; conn=sqlite3.connect('taskf
 taskflow_team/
 ├── main.py              # CLI, меню, вызов Database, очистка экрана
 ├── database.py          # SQL-слой, одно соединение на сессию
-├── utils.py             # Ввод, валидация, печать таблиц
-├── config.py            # Пути к БД и SQL-файлам
+├── utils.py             # Ввод, валидация, таблицы + карточки задач + цвета
+├── config.py            # Пути к БД/SQL + режим вывода задач + флаг цветов
 ├── sql/
 │   ├── schema.sql       # DDL (CREATE TABLE)
 │   └── seed.sql         # Демо-данные
@@ -204,8 +207,9 @@ taskflow_team/
 | Только **CLI**, без GUI. | **CLI** only; no GUI. |
 | Email — упрощённый ASCII-шаблон; часть реальных адресов может не пройти. | Email validation is ASCII-oriented; some real addresses may be rejected. |
 | Лимиты длины полей в **`utils.py`**, не в `CHECK` в SQLite. | Length limits enforced in **`utils.py`**, not SQLite `CHECK`. |
-| `created_at` есть в БД, в списках задач в консоли не показывается. | `created_at` exists in DB but is not shown in current task listings. |
+| `created_at` есть в БД, в текущем отображении задач не выводится (ни в таблицах, ни в карточках). | `created_at` exists in DB but is not currently printed in task table/card views. |
 | «Просрочено» через SQLite `date('now')` (семантика дат SQLite). | “Overdue” uses SQLite `date('now')` (SQLite date semantics). |
+| ANSI-цвета зависят от терминала; при отсутствии поддержки выводится обычный текст. | ANSI colors depend on terminal support; fallback is plain text output. |
 
 ---
 

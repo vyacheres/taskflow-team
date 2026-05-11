@@ -10,15 +10,16 @@ from __future__ import annotations
 import os
 import re
 import subprocess
+import sys
+import textwrap
 from datetime import datetime
+
+from config import ENABLE_COLORS, MAX_DISPLAY_COLUMN_WIDTH, TASKS_VIEW_MODE
 
 # Допустимые значения приоритета (совпадают с CHECK в таблице tasks).
 VALID_PRIORITIES = {"low", "medium", "high"}
 # Допустимые статусы задачи.
 VALID_STATUSES = {"new", "in_progress", "done"}
-# Максимальная ширина ячейки при печати таблицы (обрезка длинного текста).
-MAX_COLUMN_WIDTH = 36
-
 # --- Ограничения длины текстовых полей (согласованы с интерфейсом, не с SQL) ---
 MAX_FULL_NAME = 200
 MAX_POSITION = 120
@@ -31,6 +32,19 @@ MAX_TASK_DESCRIPTION = 4000
 _EMAIL_RE = re.compile(
     r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
 )
+
+_ANSI_RESET = "\033[0m"
+_ANSI_BOLD = "\033[1m"
+_PRIORITY_COLORS = {
+    "high": "\033[31m",  # red
+    "medium": "\033[33m",  # yellow
+    "low": "\033[32m",  # green
+}
+_STATUS_COLORS = {
+    "new": "\033[37m",  # white
+    "in_progress": "\033[36m",  # cyan
+    "done": "\033[32m",  # green
+}
 
 
 def is_valid_email(value: str) -> bool:
@@ -158,8 +172,7 @@ def read_yes_no(prompt: str) -> bool:
 def print_table(title: str, rows: list[tuple], columns: list[str]) -> None:
     """
     Печатает таблицу: заголовок, разделитель, строки с выравниванием по ширине.
-
-    Длина колонок ограничена MAX_COLUMN_WIDTH; длинные значения обрезаются с «...».
+    Длина колонок подстраивается под максимальную длину значения в колонке.
     """
     print(f"\n{title}")
     print("-" * len(title))
@@ -174,26 +187,129 @@ def print_table(title: str, rows: list[tuple], columns: list[str]) -> None:
     widths: list[int] = []
     for idx, column in enumerate(columns):
         max_cell_width = max((len(row[idx]) for row in string_rows), default=0)
-        widths.append(
-            min(MAX_COLUMN_WIDTH, max(len(column), max_cell_width)),
+        widths.append(min(MAX_DISPLAY_COLUMN_WIDTH, max(len(column), max_cell_width)))
+
+    def wrap_cell(value: str, width: int) -> list[str]:
+        """Переносит значение по словам; ничего не отбрасывает."""
+        if value == "":
+            return [""]
+        return textwrap.wrap(
+            value,
+            width=width,
+            break_long_words=True,
+            break_on_hyphens=False,
         )
 
-    def format_cell(value: str, width: int) -> str:
-        """Форматирует одну ячейку: обрезка или дополнение пробелами слева."""
-        if len(value) > width:
-            if width <= 3:
-                return value[:width]
-            return f"{value[: width - 3]}..."
-        return value.ljust(width)
-
-    header = " | ".join(
-        format_cell(col, widths[idx]) for idx, col in enumerate(columns)
-    )
+    header = " | ".join(col.ljust(widths[idx]) for idx, col in enumerate(columns))
     separator = "-+-".join("-" * width for width in widths)
     print(header)
     print(separator)
     for row in string_rows:
-        line = " | ".join(
-            format_cell(row[idx], widths[idx]) for idx in range(len(columns))
+        wrapped_cells = [wrap_cell(row[idx], widths[idx]) for idx in range(len(columns))]
+        line_count = max(len(lines) for lines in wrapped_cells)
+        for line_idx in range(line_count):
+            line_parts = []
+            for col_idx, lines in enumerate(wrapped_cells):
+                cell_line = lines[line_idx] if line_idx < len(lines) else ""
+                # На строках-продолжениях явно показываем, что это тот же ряд.
+                if line_idx > 0 and col_idx == 0 and cell_line == "":
+                    cell_line = "↳"
+                line_parts.append(cell_line.ljust(widths[col_idx]))
+            print(" | ".join(line_parts))
+        print(separator)
+
+
+def _supports_color() -> bool:
+    """Возвращает True, если терминал, вероятно, поддерживает ANSI-цвета."""
+    if not ENABLE_COLORS:
+        return False
+    if not sys.stdout.isatty():
+        return False
+    if os.name != "nt":
+        return True
+    return bool(
+        os.environ.get("WT_SESSION")
+        or os.environ.get("ANSICON")
+        or os.environ.get("TERM")
+        or os.environ.get("ConEmuANSI") == "ON"
+    )
+
+
+def _paint(text: str, color_code: str, bold: bool = False) -> str:
+    """Оборачивает текст в ANSI-цвета при поддержке терминала."""
+    if not _supports_color():
+        return text
+    prefix = _ANSI_BOLD + color_code if bold else color_code
+    return f"{prefix}{text}{_ANSI_RESET}"
+
+
+def _format_priority(priority: str) -> str:
+    color = _PRIORITY_COLORS.get(priority.lower(), "")
+    return _paint(priority, color, bold=True) if color else priority
+
+
+def _format_status(status: str) -> str:
+    color = _STATUS_COLORS.get(status.lower(), "")
+    return _paint(status, color, bold=True) if color else status
+
+
+def print_tasks_cards(title: str, rows: list[tuple]) -> None:
+    """
+    Печатает задачи в режиме карточек (по одной записи блоком).
+    Ожидаемый формат row: (id, title, deadline, priority, status, assignee).
+    """
+    print(f"\n{title}")
+    print("-" * len(title))
+    if not rows:
+        print("No data.")
+        return
+
+    card_width = 96
+    border = "+" + "-" * (card_width - 2) + "+"
+    for row in rows:
+        task_id, task_title, deadline, priority, status, assignee = row
+        title_lines = textwrap.wrap(
+            str(task_title),
+            width=card_width - 14,
+            break_long_words=True,
+            break_on_hyphens=False,
+        ) or [""]
+        print(border)
+        print(f"| ID: {str(task_id).ljust(card_width - 8)}|")
+        print(f"| Title: {title_lines[0].ljust(card_width - 10)}|")
+        for extra in title_lines[1:]:
+            print(f"|        {extra.ljust(card_width - 10)}|")
+        print(f"| Deadline: {str(deadline).ljust(card_width - 13)}|")
+        plain_meta = f"Priority: {str(priority)}    Status: {str(status)}"
+        print(f"| {plain_meta.ljust(card_width - 3)}|")
+        print(f"| Assignee: {str(assignee).ljust(card_width - 13)}|")
+        print(border)
+        print(
+            f"  {_format_priority(str(priority))} priority"
+            f" | status: {_format_status(str(status))}",
         )
-        print(line)
+
+
+def print_tasks(title: str, rows: list[tuple]) -> None:
+    """Печатает задачи в режиме из config (cards/table)."""
+    mode = TASKS_VIEW_MODE.strip().lower()
+    if mode == "table":
+        colored_rows: list[tuple] = []
+        for task_id, task_title, deadline, priority, status, assignee in rows:
+            colored_rows.append(
+                (
+                    task_id,
+                    task_title,
+                    deadline,
+                    _format_priority(str(priority)),
+                    _format_status(str(status)),
+                    assignee,
+                ),
+            )
+        print_table(
+            title,
+            colored_rows,
+            ["ID", "Title", "Deadline", "Priority", "Status", "Assignee"],
+        )
+        return
+    print_tasks_cards(title, rows)

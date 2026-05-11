@@ -19,6 +19,7 @@ from utils import (
     MAX_TEAM,
     clear_screen,
     print_table,
+    print_tasks,
     read_date,
     read_email,
     read_int,
@@ -205,11 +206,7 @@ def task_menu(db: Database) -> None:
             except sqlite3.Error as exc:
                 flash = f"Database error: {exc}"
                 continue
-            print_table(
-                "Tasks",
-                rows,
-                ["ID", "Title", "Deadline", "Priority", "Status", "Assignee"],
-            )
+            print_tasks("Tasks", rows)
             wait_for_enter()
 
         elif choice == "3":
@@ -350,11 +347,7 @@ def filter_menu(db: Database) -> None:
             flash = "Unknown command."
             continue
 
-        print_table(
-            "Filter Results",
-            rows,
-            ["ID", "Title", "Deadline", "Priority", "Status", "Assignee"],
-        )
+        print_tasks("Filter Results", rows)
         wait_for_enter()
 
 
