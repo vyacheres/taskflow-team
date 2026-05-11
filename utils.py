@@ -14,7 +14,12 @@ import sys
 import textwrap
 from datetime import datetime
 
-from config import ENABLE_COLORS, MAX_DISPLAY_COLUMN_WIDTH, TASKS_VIEW_MODE
+from config import (
+    ENABLE_COLORS,
+    MAX_DISPLAY_COLUMN_WIDTH,
+    TASK_CARD_WIDTH,
+    TASKS_VIEW_MODE,
+)
 
 # Допустимые значения приоритета (совпадают с CHECK в таблице tasks).
 VALID_PRIORITIES = {"low", "medium", "high"}
@@ -264,30 +269,28 @@ def print_tasks_cards(title: str, rows: list[tuple]) -> None:
         print("No data.")
         return
 
-    card_width = 96
-    border = "+" + "-" * (card_width - 2) + "+"
+    card_width = max(40, int(TASK_CARD_WIDTH))
+    border = "-" * card_width
     for row in rows:
         task_id, task_title, deadline, priority, status, assignee = row
         title_lines = textwrap.wrap(
             str(task_title),
-            width=card_width - 14,
+            width=card_width - 9,
             break_long_words=True,
             break_on_hyphens=False,
         ) or [""]
         print(border)
-        print(f"| ID: {str(task_id).ljust(card_width - 8)}|")
-        print(f"| Title: {title_lines[0].ljust(card_width - 10)}|")
+        print(f"Task #{task_id}")
+        print(f"Title: {title_lines[0]}")
         for extra in title_lines[1:]:
-            print(f"|        {extra.ljust(card_width - 10)}|")
-        print(f"| Deadline: {str(deadline).ljust(card_width - 13)}|")
-        plain_meta = f"Priority: {str(priority)}    Status: {str(status)}"
-        print(f"| {plain_meta.ljust(card_width - 3)}|")
-        print(f"| Assignee: {str(assignee).ljust(card_width - 13)}|")
-        print(border)
+            print(f"       {extra}")
+        print(f"Deadline: {deadline}")
         print(
-            f"  {_format_priority(str(priority))} priority"
-            f" | status: {_format_status(str(status))}",
+            f"Priority: {_format_priority(str(priority))} | "
+            f"Status: {_format_status(str(status))}",
         )
+        print(f"Assignee: {assignee}")
+        print(border)
 
 
 def print_tasks(title: str, rows: list[tuple]) -> None:

@@ -12,6 +12,8 @@ from pathlib import Path
 MAX_DISPLAY_COLUMN_WIDTH = 36
 # Режим отображения задач: "cards" (по одной задаче блоком) или "table".
 TASKS_VIEW_MODE = "cards"
+# Ширина карточки задачи в режиме cards.
+TASK_CARD_WIDTH = 64
 # Включить ANSI-подсветку статусов и приоритетов (если терминал поддерживает).
 ENABLE_COLORS = True
 

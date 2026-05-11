@@ -88,7 +88,7 @@
    Ожидаемый результат: **12 tests, OK**.
 
 > Экран очищается перед каждым меню; после больших таблиц нажмите **Enter**. Если нет `sql/schema.sql` или нет доступа к файлу БД — программа сообщит об ошибке и завершится.
-> Для задач можно менять режим вывода в `config.py`: `TASKS_VIEW_MODE = "cards"` или `"table"`. Цвета включаются флагом `ENABLE_COLORS`.
+> Для задач можно менять режим вывода в `config.py`: `TASKS_VIEW_MODE = "cards"` или `"table"`. Цвета включаются флагом `ENABLE_COLORS`, ширина карточки задаётся `TASK_CARD_WIDTH`.
 
 ### EN
 
@@ -111,7 +111,7 @@
    Expected: **12 tests, OK**.
 
 > The screen is cleared before each menu; after large tables, press **Enter**. If `sql/schema.sql` is missing or the DB file cannot be opened, the app prints an error and exits.
-> Task output mode is configurable in `config.py`: `TASKS_VIEW_MODE = "cards"` or `"table"`. Colors are controlled by `ENABLE_COLORS`.
+> Task output mode is configurable in `config.py`: `TASKS_VIEW_MODE = "cards"` or `"table"`. Colors are controlled by `ENABLE_COLORS`, and card width by `TASK_CARD_WIDTH`.
 
 ---
 
@@ -123,15 +123,30 @@
 |----|-----|
 | Ниже — **текстовый сценарий** работы с приложением (без скриншотов). | Below is a **text-only** walkthrough (no screenshots). |
 
-### RU — сценарий
+### RU — сценарий (актуальный формат)
 
 ```text
 === Main Menu ===
 …
 5 → подтвердить seed → Employees (1): 8 сотрудников
-Tasks (2) — карточки задач (полный title без обрезки)
+Tasks (2) → карточки задач:
+----------------------------------------------------------------
+Task #13
+Title: Optimize slow SQL query in dashboard
+Deadline: 2026-04-21
+Priority: high | Status: in_progress
+Assignee: Dmitry Orlov
+----------------------------------------------------------------
 Filters (3) → 4 — просроченные задачи
 Reports (4) → 1 — сводка по команде
+```
+
+Параметры отображения задач в `config.py`:
+
+```python
+TASKS_VIEW_MODE = "cards"  # или "table"
+TASK_CARD_WIDTH = 64
+ENABLE_COLORS = True
 ```
 
 **Загрузка сида из shell** (альтернатива меню):
@@ -140,13 +155,20 @@ Reports (4) → 1 — сводка по команде
 python -c "from pathlib import Path; import sqlite3; conn=sqlite3.connect('taskflow_team.db'); conn.executescript(Path('sql/seed.sql').read_text(encoding='utf-8')); conn.commit(); conn.close()"
 ```
 
-### EN — scenario
+### EN — scenario (current format)
 
 ```text
 === Main Menu ===
 …
 5 → confirm seed → Employees (1): 8 employees
-Tasks (2) — task cards (full title, no truncation)
+Tasks (2) → task cards:
+----------------------------------------------------------------
+Task #13
+Title: Optimize slow SQL query in dashboard
+Deadline: 2026-04-21
+Priority: high | Status: in_progress
+Assignee: Dmitry Orlov
+----------------------------------------------------------------
 Filters (3) → option 4 — overdue tasks
 Reports (4) → option 1 — team summary
 ```
@@ -168,7 +190,7 @@ taskflow_team/
 ├── main.py              # CLI, меню, вызов Database, очистка экрана
 ├── database.py          # SQL-слой, одно соединение на сессию
 ├── utils.py             # Ввод, валидация, таблицы + карточки задач + цвета
-├── config.py            # Пути к БД/SQL + режим вывода задач + флаг цветов
+├── config.py            # Пути к БД/SQL + режим задач + ширина карточки + цвета
 ├── sql/
 │   ├── schema.sql       # DDL (CREATE TABLE)
 │   └── seed.sql         # Демо-данные
